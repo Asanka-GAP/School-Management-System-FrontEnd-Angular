@@ -1,0 +1,20 @@
+#page-topbar {
+  width: 100%;
+  transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+#page-topbar.sidebar-collapsed {
+  margin-left: 70px;
+  width: calc(100% - 70px);
+}
+
+.app-search {
+  flex: 1;
+  max-width: 400px;
+}

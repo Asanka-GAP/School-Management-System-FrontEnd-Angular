@@ -1,0 +1,49 @@
+<div class="vertical-menu collapsed" (mouseenter)="expandSidebar()" (mouseleave)="collapseSidebar()">
+  <div class="h-100" data-simplebar="">
+    <!-- Logo -->
+    <div class="navbar-brand-box">
+      <a class="logo" href="#">
+        <span class="logo-sm">
+          <img alt="" height="24" src="assets/images/logo-sm.svg"/>
+        </span>
+        <span class="logo-lg">
+          <img alt="" height="24" src="assets/images/logo-sm.svg"/>
+          <span class="logo-txt menu-text">EduPulse</span>
+        </span>
+      </a>
+    </div>
+    <!--- Sidemenu -->
+    <div id="sidebar-menu">
+      <!-- Left Menu Start -->
+      <ul class="metismenu list-unstyled" id="side-menu">
+        <li><a routerLink="/dashboard" routerLinkActive="active"><i data-feather="home"></i><span class="menu-text">Dashboard</span></a></li>
+        <li><a href="#"><i data-feather="file-text"></i><span class="menu-text">Exams</span></a></li>
+        <li><a href="#"><i data-feather="clipboard"></i><span class="menu-text">Assignments</span></a></li>
+        <li><a href="#"><i data-feather="bar-chart-2"></i><span class="menu-text">Results</span></a></li>
+        <li><a href="#"><i data-feather="calendar"></i><span class="menu-text">Attendance</span></a></li>
+        <li><a href="#"><i data-feather="calendar"></i><span class="menu-text">Events</span></a></li>
+        <li><a routerLink="/teachers" routerLinkActive="active"><i data-feather="users"></i><span class="menu-text">Teachers</span></a></li>
+        <li><a routerLink="/students" routerLinkActive="active"><i data-feather="user"></i><span class="menu-text">Students</span></a></li>
+        <li><a routerLink="/parents" routerLinkActive="active"><i data-feather="users"></i><span class="menu-text">Parents</span></a></li>
+        <li><a href="#"><i data-feather="layers"></i><span class="menu-text">Classes</span></a></li>
+        <li><a href="#"><i data-feather="book"></i><span class="menu-text">Lessons</span></a></li>
+        <li><a href="#"><i data-feather="message-circle"></i><span class="menu-text">Messages</span></a></li>
+        <li><a href="#"><i data-feather="bell"></i><span class="menu-text">Announcements</span></a></li>
+        <li><a href="#"><i data-feather="user"></i><span class="menu-text">Profile</span></a></li>
+        <li><a href="#"><i data-feather="settings"></i><span class="menu-text">Settings</span></a></li>
+        <li><a href="#"><i data-feather="log-out"></i><span class="menu-text">Logout</span></a></li>
+      </ul>
+      <div class="card sidebar-alert border-0 text-center mx-4 mb-0 mt-5">
+        <div class="card-body">
+          <img alt="" src="assets/images/giftbox.png"/>
+          <div class="mt-4">
+            <h5 class="alertcard-title font-size-16">Unlimited Access</h5>
+            <p class="font-size-13">Upgrade your plan from a Free trial, to select "Business Plan".</p>
+            <a class="btn btn-primary mt-2" href="#!">Upgrade Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Sidebar -->
+  </div>
+</div>

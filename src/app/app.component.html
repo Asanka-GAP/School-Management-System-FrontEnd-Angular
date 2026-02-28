@@ -1,0 +1,32 @@
+<div id="layout-wrapper" [class.sidebar-collapsed]="sidebarCollapsed">
+  <app-sidebar (sidebarToggle)="onSidebarToggle($event)"></app-sidebar>
+  
+  <div class="main-wrapper" [class.sidebar-collapsed]="sidebarCollapsed">
+    <app-header [sidebarCollapsed]="sidebarCollapsed"></app-header>
+    
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
+      <router-outlet></router-outlet>
+      
+      <footer class="footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-6">
+              {{ currentYear }} © EduPulse.
+            </div>
+            <div class="col-sm-6">
+              <div class="text-sm-end d-none d-sm-block">
+                Design & Custom by
+                <a class="text-decoration-underline" href="https://www.admintem.com/" target="_blank">admintem.com</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <!-- end main content-->
+  </div>
+</div>
+<!-- END layout-wrapper -->

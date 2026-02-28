@@ -1,0 +1,161 @@
+<div class="page-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+          <h4 class="mb-0">Teachers</h4>
+          <div class="page-title-right">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+              <li class="breadcrumb-item active">Teachers</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="card-title">Teachers List</h4>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control" placeholder="Search teachers..." 
+                       [(ngModel)]="searchTerm" (input)="onSearch()" style="width: 250px;">
+                <button class="btn btn-primary" (click)="openAddModal()">
+                  <i class="mdi mdi-plus me-1"></i> Add Teacher
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading" class="table-responsive">
+              <table class="table table-striped table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Specialization</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let teacher of paginatedTeachers; let i = index">
+                    <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                    <td>{{ teacher.firstName }}</td>
+                    <td>{{ teacher.lastName }}</td>
+                    <td>{{ teacher.email }}</td>
+                    <td>{{ teacher.specialization }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-warning me-1" (click)="editTeacher(teacher)" title="Edit">
+                        <i class="mdi mdi-pencil"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deleteTeacher(teacher.id)" title="Delete">
+                        <i class="mdi mdi-delete"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="paginatedTeachers.length === 0">
+                    <td colspan="6" class="text-center">No teachers found</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="!loading && totalPages > 1" class="row mt-3">
+              <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info">
+                  Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+                  {{ Math.min(currentPage * itemsPerPage, filteredTeachers.length) }} of 
+                  {{ filteredTeachers.length }} entries
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_simple_numbers float-end">
+                  <ul class="pagination pagination-rounded mb-0">
+                    <li class="paginate_button page-item" [class.disabled]="currentPage === 1">
+                      <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+                    </li>
+                    <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
+                      <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+                    </li>
+                    <li class="paginate_button page-item" [class.disabled]="currentPage === totalPages">
+                      <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Teacher' : 'Add New Teacher' }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newTeacher.firstName" name="firstName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newTeacher.lastName" name="lastName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" [(ngModel)]="newTeacher.email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Specialization</label>
+            <input type="text" class="form-control" [(ngModel)]="newTeacher.specialization" name="specialization" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addTeacher()">
+          {{ isEditMode ? 'Update' : 'Add' }} Teacher
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" [class.show]="showDeleteModal" [style.display]="showDeleteModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="text-danger mb-3">
+          <i class="mdi mdi-alert-circle-outline" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="mb-3">Are you sure?</h4>
+        <p class="text-muted">Do you really want to delete this teacher? This action cannot be undo.</p>
+        <div class="d-flex gap-2 justify-content-center mt-4">
+          <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDeleteModal" *ngIf="showDeleteModal"></div>

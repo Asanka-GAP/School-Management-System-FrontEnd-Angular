@@ -1,0 +1,185 @@
+<div class="page-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+          <h4 class="mb-0">Students</h4>
+          <div class="page-title-right">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+              <li class="breadcrumb-item active">Students</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="card-title">Students List</h4>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control" placeholder="Search students..." 
+                       [(ngModel)]="searchTerm" (input)="onSearch()" style="width: 250px;">
+                <button class="btn btn-primary" (click)="openAddModal()">
+                  <i class="mdi mdi-plus me-1"></i> Add Student
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+
+            <div *ngIf="!loading" class="table-responsive">
+              <table class="table table-striped table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Admission No</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Date of Birth</th>
+                    <th>Admission Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let student of paginatedStudents; let i = index">
+                    <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                    <td>{{ student.admissionNumber }}</td>
+                    <td>{{ student.firstName }}</td>
+                    <td>{{ student.lastName }}</td>
+                    <td><span class="badge" [class.bg-info]="student.gender === 'MALE'" [class.bg-danger]="student.gender === 'FEMALE'">{{ student.gender }}</span></td>
+                    <td>{{ student.dateOfBirth | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ student.admissionDate | date:'yyyy-MM-dd' }}</td>
+                    <td><span class="badge" [class.bg-success]="student.status === 'ACTIVE'" [class.bg-danger]="student.status !== 'ACTIVE'">{{ student.status }}</span></td>
+                    <td>
+                      <button class="btn btn-sm btn-warning me-1" (click)="editStudent(student)" title="Edit">
+                        <i class="mdi mdi-pencil"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deleteStudent(student.id)" title="Delete">
+                        <i class="mdi mdi-delete"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="paginatedStudents.length === 0">
+                    <td colspan="9" class="text-center">No students found</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="!loading && totalPages > 1" class="row mt-3">
+              <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info">
+                  Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+                  {{ Math.min(currentPage * itemsPerPage, filteredStudents.length) }} of 
+                  {{ filteredStudents.length }} entries
+                </div>
+              </div>
+              <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_simple_numbers float-end">
+                  <ul class="pagination pagination-rounded mb-0">
+                    <li class="paginate_button page-item" [class.disabled]="currentPage === 1">
+                      <a class="page-link" (click)="goToPage(currentPage - 1)">Previous</a>
+                    </li>
+                    <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
+                      <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+                    </li>
+                    <li class="paginate_button page-item" [class.disabled]="currentPage === totalPages">
+                      <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Student Modal -->
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Student' : 'Add New Student' }}</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Admission Number</label>
+            <input type="text" class="form-control" [(ngModel)]="newStudent.admissionNumber" name="admissionNumber" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newStudent.firstName" name="firstName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control" [(ngModel)]="newStudent.lastName" name="lastName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select class="form-control" [(ngModel)]="newStudent.gender" name="gender" required>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" class="form-control" [(ngModel)]="newStudent.dateOfBirth" name="dateOfBirth" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Admission Date</label>
+            <input type="date" class="form-control" [(ngModel)]="newStudent.admissionDate" name="admissionDate" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-control" [(ngModel)]="newStudent.status" name="status" required>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="INACTIVE">INACTIVE</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addStudent()">
+          {{ isEditMode ? 'Update' : 'Add' }} Student
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showModal" *ngIf="showModal"></div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" [class.show]="showDeleteModal" [style.display]="showDeleteModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center p-4">
+        <div class="text-danger mb-3">
+          <i class="mdi mdi-alert-circle-outline" style="font-size: 4rem;"></i>
+        </div>
+        <h4 class="mb-3">Are you sure?</h4>
+        <p class="text-muted">Do you really want to delete this student? This action cannot be undo.</p>
+        <div class="d-flex gap-2 justify-content-center mt-4">
+          <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showDeleteModal" *ngIf="showDeleteModal"></div>
