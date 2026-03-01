@@ -7,7 +7,7 @@ export interface Teacher {
   firstName: string;
   lastName: string;
   email: string;
-  specialization: string;
+  subjectIds: number[];
 }
 
 @Injectable({

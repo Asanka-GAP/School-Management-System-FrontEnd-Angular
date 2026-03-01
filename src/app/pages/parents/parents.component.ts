@@ -14,7 +14,7 @@ export class ParentsComponent implements OnInit {
   parents: Parent[] = [];
   filteredParents: Parent[] = [];
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 5;
   totalPages = 0;
   loading = false;
   Math = Math;
@@ -63,6 +63,10 @@ export class ParentsComponent implements OnInit {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      const element = document.querySelector('.page-content');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 

@@ -12,6 +12,8 @@ export interface Student {
   status: string;
   parentId: number | null;
   gender: string;
+  classId?: number;
+  className?: string;
 }
 
 @Injectable({

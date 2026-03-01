@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Teacher, TeacherService } from '../../services/teacher.service';
+import { LessonService } from '../../services/lesson.service';
 
 @Component({
   selector: 'app-teachers',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './teachers.component.html',
   styleUrls: ['./teachers.component.scss']
 })
@@ -14,22 +16,25 @@ export class TeachersComponent implements OnInit {
   teachers: Teacher[] = [];
   filteredTeachers: Teacher[] = [];
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 5;
   totalPages = 0;
   loading = false;
   Math = Math;
   showModal = false;
-  newTeacher: Teacher = { id: 0, firstName: '', lastName: '', email: '', specialization: '' };
+  newTeacher: Teacher = { id: 0, firstName: '', lastName: '', email: '', subjectIds: [] };
   searchTerm = '';
   isEditMode = false;
   editingTeacher: Teacher | null = null;
   showDeleteModal = false;
   teacherToDelete: number | null = null;
+  subjects: any[] = [];
+  selectedSubject: string = '';
 
-  constructor(private teacherService: TeacherService) {}
+  constructor(private teacherService: TeacherService, private lessonService: LessonService) {}
 
   ngOnInit(): void {
     this.loadTeachers();
+    this.loadSubjects();
   }
 
   loadTeachers(): void {
@@ -53,7 +58,8 @@ export class TeachersComponent implements OnInit {
   openAddModal(): void {
     this.isEditMode = false;
     this.showModal = true;
-    this.newTeacher = { id: 0, firstName: '', lastName: '', email: '', specialization: '' };
+    this.selectedSubject = '';
+    this.newTeacher = { id: 0, firstName: '', lastName: '', email: '', subjectIds: [] };
   }
 
   closeModal(): void {
@@ -88,8 +94,7 @@ export class TeachersComponent implements OnInit {
       this.filteredTeachers = this.teachers.filter(t => 
         t.firstName.toLowerCase().includes(term) || 
         t.lastName.toLowerCase().includes(term) || 
-        t.email.toLowerCase().includes(term) ||
-        t.specialization.toLowerCase().includes(term)
+        t.email.toLowerCase().includes(term)
       );
     }
     this.totalPages = Math.ceil(this.filteredTeachers.length / this.itemsPerPage);
@@ -99,7 +104,8 @@ export class TeachersComponent implements OnInit {
   editTeacher(teacher: Teacher): void {
     this.isEditMode = true;
     this.editingTeacher = teacher;
-    this.newTeacher = { ...teacher };
+    this.selectedSubject = '';
+    this.newTeacher = { ...teacher, subjectIds: [...(teacher.subjectIds || [])] };
     this.showModal = true;
   }
 
@@ -116,6 +122,10 @@ export class TeachersComponent implements OnInit {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      const element = document.querySelector('.page-content');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 
@@ -140,5 +150,30 @@ export class TeachersComponent implements OnInit {
   cancelDelete(): void {
     this.showDeleteModal = false;
     this.teacherToDelete = null;
+  }
+
+  loadSubjects(): void {
+    this.lessonService.getAllSubjects().subscribe({
+      next: (data: any) => {
+        this.subjects = data;
+      },
+      error: (error: any) => console.error('Error loading subjects:', error)
+    });
+  }
+
+  addSubject(): void {
+    if (this.selectedSubject && !this.newTeacher.subjectIds.includes(+this.selectedSubject)) {
+      this.newTeacher.subjectIds.push(+this.selectedSubject);
+      this.selectedSubject = '';
+    }
+  }
+
+  removeSubject(subjectId: number): void {
+    this.newTeacher.subjectIds = this.newTeacher.subjectIds.filter(id => id !== subjectId);
+  }
+
+  getSubjectName(subjectId: number): string {
+    const subject = this.subjects.find(s => s.id === subjectId);
+    return subject ? subject.name : '';
   }
 }

@@ -12,8 +12,12 @@ import { KnobComponent } from './pages/charts/knob/knob.component';
 import { SparklineComponent } from './pages/charts/sparkline/sparkline.component';
 import { BasicComponent } from './pages/tables/basic/basic.component';
 import { TeachersComponent } from './pages/teachers/teachers.component';
+import { TeacherDetailComponent } from './pages/teachers/teacher-detail/teacher-detail.component';
 import { StudentsComponent } from './pages/students/students.component';
 import { ParentsComponent } from './pages/parents/parents.component';
+import { LessonsComponent } from './pages/lessons/lessons.component';
+import { SubjectsComponent } from './pages/subjects/subjects.component';
+import { ClassesComponent } from './pages/classes/classes.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -42,12 +46,22 @@ export const routes: Routes = [
   
   // Teachers Route
   { path: 'teachers', component: TeachersComponent },
+  { path: 'teachers/:id', component: TeacherDetailComponent },
   
   // Students Route
   { path: 'students', component: StudentsComponent },
   
   // Parents Route
   { path: 'parents', component: ParentsComponent },
+  
+  // Lessons Route
+  { path: 'lessons', component: LessonsComponent },
+  
+  // Subjects Route
+  { path: 'subjects', component: SubjectsComponent },
+  
+  // Classes Route
+  { path: 'classes', component: ClassesComponent },
   
   // Wildcard route
   { path: '**', redirectTo: '/dashboard' }

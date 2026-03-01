@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Student, StudentService } from '../../services/student.service';
+import { SchoolClass, ClassService } from '../../services/class.service';
 
 @Component({
   selector: 'app-students',
@@ -14,7 +15,7 @@ export class StudentsComponent implements OnInit {
   students: Student[] = [];
   filteredStudents: Student[] = [];
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 5;
   totalPages = 0;
   loading = false;
   Math = Math;
@@ -25,20 +26,24 @@ export class StudentsComponent implements OnInit {
   editingStudent: Student | null = null;
   showDeleteModal = false;
   studentToDelete: number | null = null;
+  classes: SchoolClass[] = [];
 
-  constructor(private studentService: StudentService) {}
+  constructor(private studentService: StudentService, private classService: ClassService) {}
 
   ngOnInit(): void {
     this.loadStudents();
+    this.loadClasses();
   }
 
   loadStudents(): void {
     this.loading = true;
     this.studentService.getAll().subscribe({
       next: (data) => {
-        this.students = data.sort((a, b) => 
-          a.firstName.localeCompare(b.firstName) || a.lastName.localeCompare(b.lastName)
-        );
+        this.students = data.sort((a, b) => {
+          const numA = parseInt(a.admissionNumber.replace(/\D/g, '')) || 0;
+          const numB = parseInt(b.admissionNumber.replace(/\D/g, '')) || 0;
+          return numB - numA;
+        });
         this.filteredStudents = this.students;
         this.totalPages = Math.ceil(this.filteredStudents.length / this.itemsPerPage);
         this.loading = false;
@@ -63,6 +68,10 @@ export class StudentsComponent implements OnInit {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
+      const element = document.querySelector('.page-content');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 
@@ -140,5 +149,11 @@ export class StudentsComponent implements OnInit {
   cancelDelete(): void {
     this.showDeleteModal = false;
     this.studentToDelete = null;
+  }
+
+  loadClasses(): void {
+    this.classService.getAll().subscribe({
+      next: (data) => this.classes = data
+    });
   }
 }
